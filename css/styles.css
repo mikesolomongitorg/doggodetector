@@ -53,6 +53,15 @@ h1, h2 {
   text-shadow: -1px -1px #6c757d;
   font-weight: normal;
 }
+
+.no-pad {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.uploader-container:hover {
+  cursor: move;
+}
 .no-decoration {
   text-decoration: none !important;
   color: #6c757d !important;
