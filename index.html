@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <!-- Google Fonts -->
+    <!-- <link href="https://fonts.googleapis.com/css?family=Gaegu:700|Lobster" rel="stylesheet"> -->
+    <link href="css/fonts.css" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css" integrity="sha384-9gVQ4dYFwwWSjIDZnLEWnxCjeSWFphJiwGPXr1jddIhOegiu1FwO5qRGvFXOdJZ4" crossorigin="anonymous">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/spin.css">
+    <!-- Feather Icons -->
+    <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
+    <title>Doggo Detector</title>
+  </head>
+  <body>
+    <!-- Nav -->
+    <nav class="navbar navbar-light">
+      <span class="navbar-brand mb-0">
+        <h1 class="outline-text">🐶 Doggo Detector</h1>
+      </span>
+    </nav>
+    <!-- Content -->
+    <div class="container mt-5">
+      <!-- <div class="row" id="doggo-name"></div> -->
+      
+      <div class="row" id="results"></div>
+
+      <div class="row stitched">
+        <div class="col uploader-container">
+          <div class="uploader">
+            <form action="/file-upload"
+                  class="dropzone stitched-text"
+                  id="dropzone">
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div class="fixed-bottom">
+      <footer>
+        <div class="row pr-5">
+          <div class="col">
+            <div class="float-right text-muted">
+              <a class="no-decoration" href="mailto:borkbork@doggodetector.com">
+                <i data-feather="edit-2"></i> with <i data-feather="heart"></i> by <strong>Howie</strong> and <strong>Howie</strong>
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+    <script src="js/vendor/jquery-3.3.1.min.js"></script>
+    
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ" crossorigin="anonymous"></script> -->
+    <script src="js/vendor/popper.min.js"></script>
+    
+    <!-- <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js" integrity="sha384-uefMccjFJAIv6A+rW+L4AHf99KvxDjWSu1z9VI8SKNVmz4sk7buKt/6v9KI65qnm" crossorigin="anonymous"></script> -->
+    <script src="js/vendor/bootstrap.min.js"></script>
+    <!-- Doggo Names -->
+    <script src="js/doggos.js"></script>
+    <!-- Base64 Encoding -->
+    <script>
+      File.prototype.convertToBase64 = function(callback){
+        var reader = new FileReader();
+        reader.onloadend = function (e) {
+          callback(e.target.result, e.target.error);
+        };   
+        reader.readAsDataURL(this);
+      };
+    </script>
+    <!-- Drop Zone -->
+    <script src="js/dropzone.js"></script>
+    <script>
+      Dropzone.options.dropzone = {
+        dictDefaultMessage: '<i data-feather="upload-cloud"></i> <br> Upload a photo of your doggo here',
+        paramName: "file", // The name that will be used to transfer the file
+        maxFilesize: 5, // MB
+        autoProcessQueue: false,
+        accept: function(file, done) {
+          // remove some extra stuff that DropZone creates
+          $('#dropzone .dz-details').remove();
+          $('#dropzone .dz-success-mark').remove();
+          $('#dropzone .dz-error-mark').remove();
+          // remove message class so that answer floats to the top
+          $('#dropzone .dz-default').empty();
+          // add loading icon
+          $('#dropzone .dz-default').append('<i class="spin" data-feather="loader"></i>')
+          feather.replace()
+          
+          file.convertToBase64(function(imageBase64){
+            // okay, this is annoying af. Googke doesn't want the "data:image png; base64" in the string
+            // so we have to hack the shit out of it but running a regex to strip those chars
+            // special thanks to https://stackoverflow.com/questions/35925120/google-cloud-vision-getting-invalid-value-at-requests0-image-content/36553472 
+            let slicedBase64String = imageBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "")
+            let postBody = {
+              img: slicedBase64String
+            }
+            $.ajax({
+              url: 'https://us-central1-doggo-detector.cloudfunctions.net/image-classifier',
+              type: 'post',
+              beforeSend: function(request) {
+                request.setRequestHeader("Content-Type", "application/json");
+              },
+              data: JSON.stringify(postBody),
+              success: function(success){
+                let labels = success.responses[0].labelAnnotations
+                console.log(labels)
+
+                let stopLookingForDoggos = false;
+                for (let i = 0; i < labels.length; i++) {
+                  let label = labels[i]
+                  
+                  // look up doggo and if we find one, we're done
+                  getDoggo(label.description).then(doggo => {
+                    // alright, this is hacky. we should really break the loop here but we can't
+                    // because we're in a callback function :/ we can clean this up but I'm tie tie
+                    
+                    if ( stopLookingForDoggos == false && doggo.found == true ) {
+                      console.log('doggo name is empty')
+                      displayResult(doggo, labels)
+                      // stop looping
+                      stopLookingForDoggos = true;
+                    } else if ( stopLookingForDoggos == false && labels.length - 1 == i) {
+                      displayResult(false, labels)
+                    }
+                  })
+                }
+              }
+            })
+          })
+        }
+      };
+      
+      function displayResult(doggo, labels) {
+        if (!doggo) {
+          // if this is the last label and we havent found a doggo yet, maybe the image is of something else?
+          $('#dropzone .dz-default').append(`<h3>Uh... is that a ${labels[0].description}?</h3>`)
+        } else {
+          // add doggo name to where the upload instructions used to be
+          $('#dropzone .dz-default').append(`<h3>Your doggo is ${doggo.article} ${doggo.name}.</h3>`)
+        }
+
+        // remove loading
+        $('.spin').remove()
+        
+        // add repeat button
+        
+      }
+    </script>
+    <script>
+      setTimeout( () => { feather.replace() }, 500)
+    </script>
+  </body>
+</html>
