@@ -92,6 +92,7 @@
       initDropzone()
       
       function initDropzone() {
+        setTimeout( () => { $('#reset-row').remove() }, 1000)
         doggoDropzone = new Dropzone("#dropzone", {
           url: '/file-upload',
           dictDefaultMessage: '<i data-feather="upload-cloud"></i> <br> Upload a photo of your doggo',
@@ -157,8 +158,15 @@
 
       function displayResult(doggo, labels) {
         if (!doggo) {
-          // if this is the last label and we havent found a doggo yet, maybe the image is of something else?
-          $('#dropzone .dz-default').append(`<h3>Uh... is that a ${labels[0].description}?</h3>`)
+          
+          if (labels[0].description == 'dog') {
+            // if its a dog but we dont know the breed
+            $('#dropzone .dz-default').append(`<h3>This is definitely a doggo but cannot do a detect. My brain needs to be more good.</h3>`)
+          } else {
+            // if we dont think this is a dog
+            $('#dropzone .dz-default').append(`<h3>Uh... is that a ${labels[0].description}?</h3>`)
+          }
+          
         } else {
           // add doggo name to where the upload instructions used to be
           $('#dropzone .dz-default').append(`<h3>Your doggo is ${doggo.article} ${doggo.name}.</h3>`)
@@ -185,8 +193,6 @@
                   id="dropzone">
             </form>
           `)
-          
-          $('#reset-row').remove()
           
           initDropzone()
           feather.replace()

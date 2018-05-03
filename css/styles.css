@@ -11,6 +11,19 @@ h1, h2 {
   color: #2575fc;
   font-family: 'Lobster', cursive;
 }
+
+button {
+  box-shadow: 1px 3px rgba(10, 10, 0, 0.5);
+  border-radius: 15px;
+  padding: 15px 25px;
+}
+
+button:active {
+  background-color: #3B5998;
+  box-shadow: 1px 3px rgba(10, 10, 0, 0.5);
+  transform: translateY(4px);
+}
+
 .uploader-container {
   height: 50vh;
   width: 100%;
