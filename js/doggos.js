@@ -174,7 +174,12 @@ let doggos = [
     "article": "a",
     "description": ""
   },
-  
+  {
+    "label": "belgian shepherd malinois",
+    "name": "belgian boi",
+    "article": "a",
+    "description": ""
+  }
 ]
 
 function getDoggo(label) {
