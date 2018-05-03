@@ -54,6 +54,12 @@ h1, h2 {
   font-weight: normal;
 }
 
+.center {
+  position: relative;
+  transform: translateX(-50%);
+  left: 50%;
+}
+
 .no-pad {
   padding: 0 !important;
   margin: 0 !important;

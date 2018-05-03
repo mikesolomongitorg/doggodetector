@@ -83,7 +83,8 @@
     <!-- Drop Zone -->
     <script src="js/dropzone.js"></script>
     <script>
-      Dropzone.options.dropzone = {
+      Dropzone.autoDiscover = false;
+      $('#dropzone').dropzone({
         dictDefaultMessage: '<i data-feather="upload-cloud"></i> <br> Upload a photo of your doggo',
         paramName: "file", // The name that will be used to transfer the file
         maxFilesize: 5, // MB
@@ -141,7 +142,7 @@
             })
           })
         }
-      };
+      });
       
       function displayResult(doggo, labels) {
         if (!doggo) {
@@ -155,9 +156,36 @@
         // remove loading
         $('.spin').remove()
         
-        // add repeat button
-        $('.uploader-container').append('<button type="button" class="btn btn-outline-warning">Do it again!</button>')
+        // add reset button
+        $('.dz-message').append(`
+          <div class="row text-center">
+            <div class="col mt-5">
+              <button id="reset" type="button" class="btn btn-outline-warning">Do it again!</button>
+            </div>
+          </div>
+        `)
+        // reset button reinits dropzone
+        $('#reset').on('click', function() {
+          $('#dropzone').emit("resetFiles");
+        })
+        
+        // do some formatting in a VERY hacky way
+        $('.dz-default').wrapAll('<div id="message" class="row" />')
+        $('.dz-default').addClass('center')
+        $('.dz-default').addClass('mt-5')
+        
+        $('.dz-preview').wrapAll('<div id="image" class="row" />')
+        $('.dz-preview').wrapAll('<div class="col" />')
+        $('.dz-preview').addClass('center')
+        
+        $('.dz-message').removeClass('dz-message')
+        
+        $('.uploader').wrapInner('<div class="container pt-3">')
+        
+        // put the image above the msg
+        $("#image").after($("#message"))
       }
+      
     </script>
     <script>
       setTimeout( () => { feather.replace() }, 500)
