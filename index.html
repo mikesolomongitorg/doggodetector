@@ -84,66 +84,74 @@
     <script src="js/dropzone.js"></script>
     <script>
       Dropzone.autoDiscover = false;
-      $('#dropzone').dropzone({
-        dictDefaultMessage: '<i data-feather="upload-cloud"></i> <br> Upload a photo of your doggo',
-        paramName: "file", // The name that will be used to transfer the file
-        maxFilesize: 5, // MB
-        autoProcessQueue: false,
-        accept: function(file, done) {
-          // remove some extra stuff that DropZone creates
-          $('#dropzone .dz-details').remove();
-          $('#dropzone .dz-success-mark').remove();
-          $('#dropzone .dz-error-mark').remove();
-          // remove message class so that answer floats to the top
-          $('#dropzone .dz-default').empty();
-          // add loading icon
-          $('#dropzone .dz-default').append('<i class="spin" data-feather="loader"></i>')
-          feather.replace()
-          
-          file.convertToBase64(function(imageBase64){
-            // okay, this is annoying af. Googke doesn't want the "data:image png; base64" in the string
-            // so we have to hack the shit out of it but running a regex to strip those chars
-            // special thanks to https://stackoverflow.com/questions/35925120/google-cloud-vision-getting-invalid-value-at-requests0-image-content/36553472 
-            let slicedBase64String = imageBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "")
-            let postBody = {
-              img: slicedBase64String
-            }
-            $.ajax({
-              url: 'https://us-central1-doggo-detector.cloudfunctions.net/image-classifier',
-              type: 'post',
-              beforeSend: function(request) {
-                request.setRequestHeader("Content-Type", "application/json");
-              },
-              data: JSON.stringify(postBody),
-              success: function(success){
-                let labels = success.responses[0].labelAnnotations
-                console.log(labels)
-
-                let stopLookingForDoggos = false;
-                for (let i = 0; i < labels.length; i++) {
-                  let label = labels[i]
-                  
-                  // look up doggo and if we find one, we're done
-                  getDoggo(label.description).then(doggo => {
-                    // alright, this is hacky. we should really break the loop here but we can't
-                    // because we're in a callback function :/ we can clean this up but I'm tie tie
-                    
-                    if ( stopLookingForDoggos == false && doggo.found == true ) {
-                      console.log('doggo name is empty')
-                      displayResult(doggo, labels)
-                      // stop looping
-                      stopLookingForDoggos = true;
-                    } else if ( stopLookingForDoggos == false && labels.length - 1 == i) {
-                      displayResult(false, labels)
-                    }
-                  })
-                }
-              }
-            })
-          })
-        }
-      });
       
+      var doggoDropzone // global dropzone variable
+      initDropzone()
+      
+      function initDropzone() {
+        doggoDropzone = new Dropzone("#dropzone", {
+          url: '/file-upload',
+          dictDefaultMessage: '<i data-feather="upload-cloud"></i> <br> Upload a photo of your doggo',
+          paramName: "file", // The name that will be used to transfer the file
+          maxFilesize: 5, // MB
+          autoProcessQueue: false,
+          accept: function(file, done) {
+            // remove some extra stuff that DropZone creates
+            $('#dropzone .dz-details').remove();
+            $('#dropzone .dz-success-mark').remove();
+            $('#dropzone .dz-error-mark').remove();
+            // remove message class so that answer floats to the top
+            $('#dropzone .dz-default').empty();
+            // add loading icon
+            $('#dropzone .dz-default').append('<i class="spin" data-feather="loader"></i>')
+            feather.replace()
+            
+            file.convertToBase64(function(imageBase64){
+              // okay, this is annoying af. Googke doesn't want the "data:image png; base64" in the string
+              // so we have to hack the shit out of it but running a regex to strip those chars
+              // special thanks to https://stackoverflow.com/questions/35925120/google-cloud-vision-getting-invalid-value-at-requests0-image-content/36553472 
+              let slicedBase64String = imageBase64.replace(/^data:image\/(png|jpg|jpeg);base64,/, "")
+              let postBody = {
+                img: slicedBase64String
+              }
+              $.ajax({
+                url: 'https://us-central1-doggo-detector.cloudfunctions.net/image-classifier',
+                type: 'post',
+                beforeSend: function(request) {
+                  request.setRequestHeader("Content-Type", "application/json");
+                },
+                data: JSON.stringify(postBody),
+                success: function(success){
+                  let labels = success.responses[0].labelAnnotations
+                  console.log(labels)
+
+                  let stopLookingForDoggos = false;
+                  for (let i = 0; i < labels.length; i++) {
+                    let label = labels[i]
+                    
+                    // look up doggo and if we find one, we're done
+                    getDoggo(label.description).then(doggo => {
+                      // alright, this is hacky. we should really break the loop here but we can't
+                      // because we're in a callback function :/ we can clean this up but I'm tie tie
+                      
+                      if ( stopLookingForDoggos == false && doggo.found == true ) {
+                        console.log('doggo name is empty')
+                        displayResult(doggo, labels)
+                        // stop looping
+                        stopLookingForDoggos = true;
+                      } else if ( stopLookingForDoggos == false && labels.length - 1 == i) {
+                        displayResult(false, labels)
+                      }
+                    })
+                  }
+                }
+              })
+            })
+          }
+        });
+        
+      }
+
       function displayResult(doggo, labels) {
         if (!doggo) {
           // if this is the last label and we havent found a doggo yet, maybe the image is of something else?
@@ -166,7 +174,17 @@
         `)
         // reset button reinits dropzone
         $('#reset').on('click', function() {
-          $('#dropzone').emit("resetFiles");
+          doggoDropzone.removeAllFiles();
+          $('.uploader').empty();
+          $('.uploader').append(`
+            <form action="/file-upload"
+                  class="dropzone stitched-text"
+                  id="dropzone">
+            </form>
+          `)
+          
+          initDropzone()
+          feather.replace()
         })
         
         // do some formatting in a VERY hacky way
