@@ -48,127 +48,127 @@ let doggos = [
     "description": "likes doin' a rescue. prefers the snoozins",
   },
   // labrador retriever works for black, yellow, and chocolate lab.
-    {
+  {
     "label": "labrador retriever",
     "name": "bring backy friendo",
     "article": "a",
     "description": "im a friendo, of the nilla variety"
   },
-    {
+  {
     "label": "siberian husky",
     "name": "snowy howler",
     "article": "a",
     "description": "when the skys doin a snow, i make a howl"
   },
-   {
+  {
     "label": "standard poodle",
     "name": "foo foo poofer",
     "article": "a",
     "description": "just a poof doin a fancy"
   },
-    {
+  {
     "label": "pomeranian",
     "name": "yippie puffler",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "yorkshire terrier",
     "name": "cozy pipler",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "chihuahua",
     "name": "tremblemeister",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "shar pei",
     "name": "rip van wrinkler",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "bulldog",
     "name": "power crumple",
     "article": "a",
     "description": ""
   },
-      {
+  {
     "label": "puggle",
     "name": "sophistisquisher",
     "article": "a",
     "description": ""
   },
-      {
+  {
     "label": "boxer",
     "name": "pummel thump",
     "article": "a",
     "description": ""
   },
-      {
+  {
     "label": "jack russell terrier",
     "name": "smooth detecto",
     "article": "a",
     "description": ""
   },
-      {
+  {
     "label": "french bulldog",
     "name": "Garcon Pierres",
     "article": "a",
     "description": ""
   },
-       {
+  {
     "label": "dachshund",
     "name": "speed schweiner",
     "article": "a",
     "description": ""
   },
-        {
+  {
     "label": "german shorthaired pointer",
     "name": "speckled finder",
     "article": "a",
     "description": ""
   },
-        {
+  {
     "label": "dobermann",
     "name": "scary long boi",
     "article": "a",
     "description": ""
   },
-        {
+  {
     "label": "great dane",
     "name": "heafty whopper",
     "article": "a",
     "description": ""
   },
-        {
+  {
     "label": "shih tzu",
     "name": "bittle pip",
     "article": "a",
     "description": ""
   },
-     {
+  {
     "label": "spaniel",
     "name": "royal wave boi",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "australian shepherd",
     "name": "spotty rogue getter",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "welsh corgi",
     "name": "loafie corgo",
     "article": "a",
     "description": ""
   },
-    {
+  {
     "label": "newfoundland",
     "name": "floofie mlembo",
     "article": "a",
