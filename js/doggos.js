@@ -179,6 +179,18 @@ let doggos = [
     "name": "belgian boi",
     "article": "a",
     "description": ""
+  },
+  {
+    "label": "scottish terrier",
+    "name": "mustache yapper pup",
+    "article": "a",
+    "description": ""
+  },
+  {
+    "label": "greyhound",
+    "name": "long boi",
+    "article": "a",
+    "description": ""
   }
 ]
 
