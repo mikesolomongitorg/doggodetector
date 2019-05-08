@@ -153,7 +153,7 @@
                     let label = labels[i]
                     
                     // look up doggo and if we find one, we're done
-                    getDoggo(label.description).then(doggo => {
+                    getDoggo(label.description.toLowerCase()).then(doggo => {
                       // alright, this is hacky. we should really break the loop here but we can't
                       // because we're in a callback function :/ we can clean this up but I'm tie tie
                       
